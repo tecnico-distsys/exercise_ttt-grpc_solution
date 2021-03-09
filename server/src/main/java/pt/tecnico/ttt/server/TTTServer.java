@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.distsys.ttt.server;
+package pt.tecnico.ttt.server;
 
 import io.grpc.BindableService;
 import io.grpc.Server;

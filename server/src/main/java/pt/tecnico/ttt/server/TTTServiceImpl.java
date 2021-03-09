@@ -1,7 +1,7 @@
-package pt.ulisboa.tecnico.distsys.ttt.server;
+package pt.tecnico.ttt.server;
 
 import io.grpc.stub.StreamObserver;
-import pt.ulisboa.tecnico.distsys.ttt.*;
+import pt.tecnico.ttt.*;
 
 public class TTTServiceImpl extends TTTGrpc.TTTImplBase {
     private TTTGame ttt = new TTTGame();

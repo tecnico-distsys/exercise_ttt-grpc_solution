@@ -1,9 +1,9 @@
-package pt.ulisboa.tecnico.distsys.ttt.client;
+package pt.tecnico.ttt.client;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import pt.ulisboa.tecnico.distsys.ttt.*;
-import pt.ulisboa.tecnico.distsys.ttt.PlayResponse.PlayResult;
+import pt.tecnico.ttt.*;
+import pt.tecnico.ttt.PlayResponse.PlayResult;
 
 import java.util.Scanner;
 

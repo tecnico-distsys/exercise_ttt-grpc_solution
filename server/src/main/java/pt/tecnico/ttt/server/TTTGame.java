@@ -1,6 +1,6 @@
-package pt.ulisboa.tecnico.distsys.ttt.server;
+package pt.tecnico.ttt.server;
 
-import pt.ulisboa.tecnico.distsys.ttt.PlayResponse.PlayResult;
+import pt.tecnico.ttt.PlayResponse.PlayResult;
 
 public class TTTGame {
 	private char board[][];
