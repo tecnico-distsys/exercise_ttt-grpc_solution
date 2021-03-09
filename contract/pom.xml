@@ -1,28 +1,30 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<!-- http://maven.apache.org/pom.html#Quick_Overview -->
 
 	<groupId>pt.tecnico.sdis</groupId>
-	<artifactId>ttt-contract</artifactId>
+	<artifactId>ttt-grpc-contract</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>${project.artifactId}</name>
 
+	<!-- Properties are variables used to customize the behavior of Maven and its plug-ins. -->
 	<properties>
 		<!-- compiler properties -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<os-maven-plugin.version>1.5.0.Final</os-maven-plugin.version>
-		<maven-enforcer-plugin.version>1.4.1</maven-enforcer-plugin.version>
+		<os-maven-plugin.version>1.6.2</os-maven-plugin.version>
+		<maven-enforcer-plugin.version>3.0.0-M3</maven-enforcer-plugin.version>
 
 		<!-- gRPC properties -->
-		<grpc.version>1.27.2</grpc.version>
+		<grpc.version>1.28.0</grpc.version>
 		<protobuf.version>3.11.0</protobuf.version>
 		<protoc.version>3.11.4</protoc.version>
 		<!-- tcnative - tomcat native -->
-		<!--netty.tcnative.version>2.0.7.Final</netty.tcnative.version-->
+		<!--netty.tcnative.version>2.0.29.Final</netty.tcnative.version -->
 		<protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
 	</properties>
 
@@ -131,7 +133,7 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.1</version>
 				<configuration>
-					<release>11</release>
+					<release>${version.java}</release>
 				</configuration>
 			</plugin>
 		</plugins>
