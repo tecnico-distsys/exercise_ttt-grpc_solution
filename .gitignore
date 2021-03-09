@@ -39,3 +39,6 @@ target/
 
 # IntelliJ IDEA
 .idea/
+
+# VSCode
+.vscode/
