@@ -76,12 +76,14 @@ public class TTTClient {
 			do {
 				/* Get valid player square selection. */
 				do {
-					/* Print current board */
+					/* Print current board. */
 					debug("Call currentBoard");
 					System.out.println(stub.currentBoard(CurrentBoardRequest.getDefaultInstance()).getBoard());
 
-					System.out.printf("\nPlayer %d, please enter the number of the square " +
-							"where you want to place your %c (or 0 to refresh the board): ", player, (player==1)?'X':'O');
+					System.out.printf(
+							"%nPlayer %d, please enter the number of the square "
+									+ "where you want to place your %c (or 0 to refresh the board): ",
+							player, (player == 1) ? 'X' : 'O');
 					go = scanner.nextInt();
 					debug("go = " + go);
 
@@ -107,14 +109,13 @@ public class TTTClient {
 				debug("Call checkWinner");
 				winner = stub.checkWinner(CheckWinnerRequest.getDefaultInstance()).getResult();
 
-				/* Select next player */
+				/* Select next player. */
 				player = (player + 1) % 2;
-
 				debug("player " + player);
 
 			} while (winner == -1);
 
-			/* Game is over so display the final board */
+			/* Game is over so display the final board. */
 			debug("Call currentBoard");
 			System.out.println(stub.currentBoard(CurrentBoardRequest.getDefaultInstance()).getBoard());
 
