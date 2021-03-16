@@ -41,16 +41,19 @@ public class TTTClient {
 		final String target = host + ":" + port;
 		debug("Target: " + target);
 
-		// Channel is the abstraction to connect to a service endpoint
-		// Let us use plaintext communication because we do not have certificates
+		// Channel is the abstraction to connect to a service endpoint.
+		// Let us use plaintext communication because we do not have certificates.
 		final ManagedChannel channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
 
-		// It is up to the client to determine whether to block the call
+		// It is up to the client to determine whether to block the call.
 		// Here we create a blocking stub, but an async stub,
 		// or an async stub with Future are always possible.
 		TTTGrpc.TTTBlockingStub stub = TTTGrpc.newBlockingStub(channel);
 
 		playGame(stub);
+
+		// A Channel should be shutdown before stopping the process.
+		channel.shutdownNow();
 	}
 
 	private static void playGame(TTTGrpc.TTTBlockingStub stub) {
