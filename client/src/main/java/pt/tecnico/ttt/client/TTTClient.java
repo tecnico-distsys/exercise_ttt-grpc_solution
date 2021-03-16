@@ -19,7 +19,7 @@ public class TTTClient {
 			System.err.println(debugMessage);
 	}
 
-	/** Main method. */
+	/** The main method is the starting point for the program. */
 	public static void main(String[] args) {
 		System.out.println(TTTClient.class.getSimpleName());
 
@@ -83,16 +83,17 @@ public class TTTClient {
 					System.out.printf("\nPlayer %d, please enter the number of the square " +
 							"where you want to place your %c (or 0 to refresh the board): ", player, (player==1)?'X':'O');
 					go = scanner.nextInt();
-
 					debug("go = " + go);
 
-					if (go == 0){
+					if (go == 0) {
 						play_res = PlayResult.UNKNOWN;
 						continue;
 					}
 
-					row = --go / 3; /* Get row index of square      */
-					column = go % 3; /* Get column index of square   */
+					/* Get row index of board. */
+					row = --go / 3;
+					/* Get column index of board. */
+					column = go % 3;
 					debug("row = " + row + ", column = " + column);
 
 					PlayRequest playRequest = PlayRequest.newBuilder().setRow(row).setColumn(column).setPlayer(player).build();
@@ -109,19 +110,21 @@ public class TTTClient {
 				/* Select next player */
 				player = (player + 1) % 2;
 
+				debug("player " + player);
+
 			} while (winner == -1);
 
 			/* Game is over so display the final board */
 			debug("Call currentBoard");
 			System.out.println(stub.currentBoard(CurrentBoardRequest.getDefaultInstance()).getBoard());
 
-			/* Display result message */
-			if(winner == 2) {
+			/* Display result message. */
+			if (winner == 2) {
 				System.out.println();
-				System.out.println("\nHow boring, it is a draw");
+				System.out.println("How boring, it is a draw");
 			} else {
 				System.out.println();
-				System.out.println("\nCongratulations, player " + winner + ", YOU ARE THE WINNER!");
+				System.out.println("Congratulations, player " + winner + ", YOU ARE THE WINNER!");
 			}
 		}
 	}
@@ -142,7 +145,7 @@ public class TTTClient {
 			System.out.print("Game has finished.");
 			break;
 		default:
-			System.out.print("Unknown result! Something is wrong!");
+			System.out.println("Unexpected result: " + play_res.toString());
 			break;
 		}
 		System.out.println(" Try again...");
