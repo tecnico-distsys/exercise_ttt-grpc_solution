@@ -9,13 +9,24 @@ import java.util.Scanner;
 
 public class TTTClient {
 
+	/** Set flag to true to print debug messages. 
+	 * The flag can be set using the -Ddebug command line option. */
+	private static final boolean DEBUG_FLAG = (System.getProperty("debug") != null);
+
+	/** Helper method to print debug messages. */
+	private static void debug(String debugMessage) {
+		if (DEBUG_FLAG)
+			System.err.println(debugMessage);
+	}
+
+	/** Main method. */
 	public static void main(String[] args) {
 		System.out.println(TTTClient.class.getSimpleName());
 
 		// receive and print arguments
-		System.out.printf("Received %d arguments%n", args.length);
+		debug(String.format("Received %d arguments%n", args.length));
 		for (int i = 0; i < args.length; i++) {
-			System.out.printf("arg[%d] = %s%n", i, args[i]);
+			debug(String.format("arg[%d] = %s%n", i, args[i]));
 		}
 
 		// check arguments
@@ -28,6 +39,7 @@ public class TTTClient {
 		final String host = args[0];
 		final int port = Integer.parseInt(args[1]);
 		final String target = host + ":" + port;
+		debug("Target: " + target);
 
 		// Channel is the abstraction to connect to a service endpoint
 		// Let us use plaintext communication because we do not have certificates
@@ -39,82 +51,98 @@ public class TTTClient {
 		TTTGrpc.TTTBlockingStub stub = TTTGrpc.newBlockingStub(channel);
 
 		playGame(stub);
-
 	}
 
 	private static void playGame(TTTGrpc.TTTBlockingStub stub) {
 
-		int player = 0;                              /* Player number - 0 or 1               */
-		int go = 0;                                  /* Square selection number for turn     */
-		int row = 0;                                 /* Row index for a square               */
-		int column = 0;                              /* Column index for a square            */
-		int winner = -1;                              /* The winning player                   */
+		int player = 0; /* Player number - 0 or 1 */
+		int go = 0; /* Square selection number for turn */
+		int row = 0; /* Row index for a square */
+		int column = 0; /* Column index for a square */
+		int winner = -1; /* The winning player */
 		PlayResult play_res;
 
-		/* The main game loop. The game continues for up to 9 turns */
-		/* As long as there is no winner                            */
-		do {
-			/* Get valid player square selection */
+		/*
+		 * Using try with scanner - ensures the resource is closed in the end, even if
+		 * there are exceptions.
+		 */
+		try (Scanner scanner = new Scanner(System.in)) {
+
+			/* The main game loop. The game continues for up to 9 turns, */
+			/* as long as there is no winner. */
 			do {
-				/* Print current board */
-				System.out.println(stub.currentBoard(CurrentBoardRequest.getDefaultInstance()).getBoard());
+				/* Get valid player square selection. */
+				do {
+					/* Print current board */
+					debug("Call currentBoard");
+					System.out.println(stub.currentBoard(CurrentBoardRequest.getDefaultInstance()).getBoard());
 
-				System.out.printf("\nPlayer %d, please enter the number of the square " +
-						"where you want to place your %c (or 0 to refresh the board): ", player, (player==1)?'X':'O');
-				go = readPlay();
+					System.out.printf("\nPlayer %d, please enter the number of the square " +
+							"where you want to place your %c (or 0 to refresh the board): ", player, (player==1)?'X':'O');
+					go = scanner.nextInt();
 
-				if (go == 0){
-					play_res = PlayResult.UNKNOWN;
-					continue;
-				}
+					debug("go = " + go);
 
-				row = --go/3;                                 /* Get row index of square      */
-				column = go%3;                                /* Get column index of square   */
+					if (go == 0){
+						play_res = PlayResult.UNKNOWN;
+						continue;
+					}
 
-				PlayRequest playRequest = PlayRequest.newBuilder().setRow(row).setColumn(column).setPlayer(player).build();
-				play_res = stub.play(playRequest).getResult();
-				if (play_res != PlayResult.SUCCESS) {
-					displayResult(play_res);
-				}
-			} while(play_res != PlayResult.SUCCESS);
+					row = --go / 3; /* Get row index of square      */
+					column = go % 3; /* Get column index of square   */
+					debug("row = " + row + ", column = " + column);
 
-			winner = stub.checkWinner(CheckWinnerRequest.getDefaultInstance()).getResult();
-			player = (player+1)%2;                           /* Select player */
+					PlayRequest playRequest = PlayRequest.newBuilder().setRow(row).setColumn(column).setPlayer(player).build();
+					debug("Call play");
+					play_res = stub.play(playRequest).getResult();
+					if (play_res != PlayResult.SUCCESS) {
+						displayResult(play_res);
+					}
+				} while(play_res != PlayResult.SUCCESS);
 
-			System.out.println("player " + player);
+				debug("Call checkWinner");
+				winner = stub.checkWinner(CheckWinnerRequest.getDefaultInstance()).getResult();
 
-		} while (winner == -1);
+				/* Select next player */
+				player = (player + 1) % 2;
 
-		/* Game is over so display the final board */
-		System.out.println(stub.currentBoard(CurrentBoardRequest.getDefaultInstance()).getBoard());
+			} while (winner == -1);
 
-		/* Display result message */
-		if(winner == 2)
-			System.out.println("\nHow boring, it is a draw");
-		else
-			System.out.println("\nCongratulations, player " + winner + ", YOU ARE THE WINNER!");
+			/* Game is over so display the final board */
+			debug("Call currentBoard");
+			System.out.println(stub.currentBoard(CurrentBoardRequest.getDefaultInstance()).getBoard());
+
+			/* Display result message */
+			if(winner == 2) {
+				System.out.println();
+				System.out.println("\nHow boring, it is a draw");
+			} else {
+				System.out.println();
+				System.out.println("\nCongratulations, player " + winner + ", YOU ARE THE WINNER!");
+			}
+		}
 	}
 
+	/** Helper method to display result as text. */
 	private static void displayResult(PlayResult play_res) {
 		switch (play_res) {
-			case OUT_OF_BOUNDS:
-				System.out.print("Position outside board.");
-				break;
-			case SQUARE_TAKEN:
-				System.out.print("Square already taken.");
-				break;
-			case WRONG_TURN:
-				System.out.print("Not your turn.");
-				break;
-			case GAME_FINISHED:
-				System.out.print("Game has finished.");
-				break;
+		case OUT_OF_BOUNDS:
+			System.out.print("Position outside board.");
+			break;
+		case SQUARE_TAKEN:
+			System.out.print("Square already taken.");
+			break;
+		case WRONG_TURN:
+			System.out.print("Not your turn.");
+			break;
+		case GAME_FINISHED:
+			System.out.print("Game has finished.");
+			break;
+		default:
+			System.out.print("Unknown result! Something is wrong!");
+			break;
 		}
 		System.out.println(" Try again...");
 	}
 
-	private static int readPlay() {
-		Scanner scanner = new Scanner(System.in);
-		return scanner.nextInt();
-	}
 }
