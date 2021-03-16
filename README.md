@@ -1,11 +1,11 @@
-# gRPC TTT
+# gRPC Tic Tac Toe exercise
 
 This is a gRPC implementation of Tic Tac Toe, composed by three modules:
 - [contract](contract/) - protocol buffers definition
 - [server](server/) - implementation of service
 - [client](client/) - invocation of service
 
-See the README for each module.
+See the README for each module.  
 Start at contract, then go to server, and finally go to the client.
 
 ----
