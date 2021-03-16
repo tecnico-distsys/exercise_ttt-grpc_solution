@@ -24,9 +24,9 @@ public class TTTClient {
 		System.out.println(TTTClient.class.getSimpleName());
 
 		// receive and print arguments
-		debug(String.format("Received %d arguments%n", args.length));
+		debug(String.format("Received %d arguments", args.length));
 		for (int i = 0; i < args.length; i++) {
-			debug(String.format("arg[%d] = %s%n", i, args[i]));
+			debug(String.format("arg[%d] = %s", i, args[i]));
 		}
 
 		// check arguments
