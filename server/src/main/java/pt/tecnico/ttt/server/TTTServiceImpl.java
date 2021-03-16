@@ -4,6 +4,8 @@ import io.grpc.stub.StreamObserver;
 import pt.tecnico.ttt.*;
 
 public class TTTServiceImpl extends TTTGrpc.TTTImplBase {
+
+	/** Game implementation. */
 	private TTTGame ttt = new TTTGame();
 
 	@Override
