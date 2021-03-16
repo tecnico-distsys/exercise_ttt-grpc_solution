@@ -8,11 +8,7 @@ public class TTTGame {
 	private int nextPlayer = 0;
 	
 	public TTTGame() {
-		board = new char[][] {
-			{'1', '2', '3'},
-			{'4', '5', '6'},
-			{'7', '8', '9'}
-		};
+		this.resetBoard();
 	}
 	
 	@Override
@@ -26,26 +22,26 @@ public class TTTGame {
 
 	public PlayResult play(int row, int column, int player) {
 		if (!(row >=0 && row <3 && column >= 0 && column < 3)) {
-			/* outside board */
+			/* Outside board */
 			return PlayResult.OUT_OF_BOUNDS;
 		}
 		synchronized (this) {
 			if (board[row][column] > '9') {
-				/* square has been taken */
+				/* Square has been taken */
 				return PlayResult.SQUARE_TAKEN;
 			}
 			if (player != nextPlayer)  {
-				/* not players turn */
+				/* Not players turn */
 				return PlayResult.WRONG_TURN;
 			}
 			if (numPlays == 9) {
-				/* no more plays left */
+				/* No more plays left */
 				return PlayResult.GAME_FINISHED;
 			}
 	
-			board[row][column] = (player == 1) ? 'X' : 'O';  /* Insert player symbol   */
+			board[row][column] = (player == 1) ? 'X' : 'O';  /* Insert player symbol */
 			nextPlayer = (nextPlayer + 1) % 2;
-			numPlays ++;
+			numPlays++;
 			return PlayResult.SUCCESS;
 		}
 	}
@@ -98,4 +94,13 @@ public class TTTGame {
 		return result; 
 
 	}
+	
+	public void resetBoard() {
+		board = new char[][] {
+			{'1', '2', '3'},
+			{'4', '5', '6'},
+			{'7', '8', '9'}
+		};
+	}
+	
 }
