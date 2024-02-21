@@ -10,37 +10,53 @@ option java_multiple_files = true;
 // current board operation
 
 message CurrentBoardRequest {
-	// No arguments for this request.
+ 	// No arguments for this request.
 }
 
 message CurrentBoardResponse {
 	string board = 1;
 }
 
+
+// play operation
+
+enum PlayResult {
+	UNKNOWN = 0;
+	OUT_OF_BOUNDS = 1;
+	SQUARE_TAKEN = 2;
+	WRONG_TURN = 3;
+	GAME_FINISHED = 4;
+	SUCCESS = 5;
+};
+
+// TODO request and response
 message PlayRequest {
-	uint32 row = 1;
-	uint32 column = 2;
-	uint32 player = 3;
+	int32 row = 1;
+	int32 column = 2;
+	int32 player = 3;
 }
 
 message PlayResponse {
-	enum PlayResult {
-		UNKNOWN = 0;
-		OUT_OF_BOUNDS = 1;
-		SQUARE_TAKEN = 2;
-		WRONG_TURN = 3;
-		GAME_FINISHED = 4;
-		SUCCESS = 5;
-	};
-	PlayResult result = 1;
+	PlayResult playResult = 1;
 }
 
+// check winner operation
+
 message CheckWinnerRequest {
-	// No arguments for this request
+	// No args
 }
 
 message CheckWinnerResponse {
-	sint32 result = 1;
+	int32 result = 1;
+}
+
+// wait for winner operation
+message WaitForWinnerRequest {
+	// No args
+}
+
+message WaitForWinnerResponse {
+	int32 result = 1;
 }
 
 // service
@@ -49,4 +65,5 @@ service TTT {
 	rpc CurrentBoard(CurrentBoardRequest) returns (CurrentBoardResponse);
 	rpc Play(PlayRequest) returns (PlayResponse);
 	rpc CheckWinner(CheckWinnerRequest) returns (CheckWinnerResponse);
+	rpc waitForWinner(WaitForWinnerRequest) returns (WaitForWinnerResponse);
 }

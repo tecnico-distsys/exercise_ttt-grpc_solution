@@ -5,6 +5,7 @@ import io.grpc.Server;
 import io.grpc.ServerBuilder;
 
 import java.io.IOException;
+import static io.grpc.Status.INVALID_ARGUMENT;
 
 public class TTTServer {
 	public static void main(String[] args) throws IOException, InterruptedException {

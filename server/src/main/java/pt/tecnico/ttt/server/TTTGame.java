@@ -1,6 +1,6 @@
 package pt.tecnico.ttt.server;
 
-import pt.tecnico.ttt.PlayResponse.PlayResult;
+import pt.tecnico.ttt.PlayResult;
 
 public class TTTGame {
 	private char board[][];
@@ -20,7 +20,7 @@ public class TTTGame {
 	}
 	
 
-	public PlayResult play(int row, int column, int player) {
+	public synchronized PlayResult play(int row, int column, int player) {
 		if (!(row >=0 && row <3 && column >= 0 && column < 3)) {
 			/* Outside board */
 			return PlayResult.OUT_OF_BOUNDS;
@@ -42,6 +42,9 @@ public class TTTGame {
 			board[row][column] = (player == 1) ? 'X' : 'O';  /* Insert player symbol */
 			nextPlayer = (nextPlayer + 1) % 2;
 			numPlays++;
+
+			notifyAll(); // notifies that a play has been executed
+
 			return PlayResult.SUCCESS;
 		}
 	}
@@ -93,6 +96,19 @@ public class TTTGame {
 		
 		return result; 
 
+	}
+
+	public synchronized int waitForWinner() {
+		int result = this.checkWinner();
+		while (result == -1) {
+      try {
+        wait(); // wait until a play is made
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+			result = this.checkWinner();
+    }
+		return result;
 	}
 	
 	public void resetBoard() {
