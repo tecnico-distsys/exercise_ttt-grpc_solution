@@ -2,8 +2,10 @@ package pt.tecnico.ttt.client;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
+import javax.sound.midi.SysexMessage;
 import pt.tecnico.ttt.*;
-import pt.tecnico.ttt.PlayResponse.PlayResult;
+import pt.tecnico.ttt.PlayResult;
 
 import java.util.Scanner;
 
@@ -73,48 +75,68 @@ public class TTTClient {
 
 			/* The main game loop. The game continues for up to 9 turns, */
 			/* as long as there is no winner. */
-			do {
-				/* Get valid player square selection. */
+
+			System.out.printf(
+					"Type 1 for playing mode or type 0 for waitForWinnerMode: ");
+			Integer mode = scanner.nextInt();
+
+			if(mode == 1) {
+				// Playing mode
 				do {
-					/* Print current board. */
-					debug("Call currentBoard");
-					System.out.println(stub.currentBoard(CurrentBoardRequest.getDefaultInstance()).getBoard());
+				/* Get valid player square selection. */
+					do {
+						/* Print current board. */
+						debug("Call currentBoard");
+						System.out.println(stub.currentBoard(CurrentBoardRequest.getDefaultInstance()).getBoard());
 
-					System.out.printf(
-							"%nPlayer %d, please enter the number of the square "
-									+ "where you want to place your %c (or 0 to refresh the board): ",
-							player, (player == 1) ? 'X' : 'O');
-					go = scanner.nextInt();
-					debug("go = " + go);
+						System.out.printf(
+								"%nPlayer %d, please enter the number of the square "
+										+ "where you want to place your %c (or 0 to refresh the board): ",
+								player, (player == 1) ? 'X' : 'O');
+						go = scanner.nextInt();
+						debug("go = " + go);
 
-					if (go == 0) {
-						play_res = PlayResult.UNKNOWN;
-						continue;
-					}
+						if (go == 0) {
+							play_res = PlayResult.UNKNOWN;
+							continue;
+						}
 
-					/* Get row index of board. */
-					row = --go / 3;
-					/* Get column index of board. */
-					column = go % 3;
-					debug("row = " + row + ", column = " + column);
+						/* Get row index of board. */
+						row = --go / 3;
+						/* Get column index of board. */
+						column = go % 3;
+						debug("row = " + row + ", column = " + column);
 
-					PlayRequest playRequest = PlayRequest.newBuilder().setRow(row).setColumn(column).setPlayer(player).build();
-					debug("Call play");
-					play_res = stub.play(playRequest).getResult();
-					if (play_res != PlayResult.SUCCESS) {
-						displayResult(play_res);
-					}
-				} while(play_res != PlayResult.SUCCESS);
+						// TODO call play and set the proper play result
+						PlayRequest request = PlayRequest.newBuilder().setRow(row).setColumn(column).setPlayer(player).build();
+						play_res = null;
+						try	{
+							play_res = stub.play(request).getPlayResult();
+							if (play_res != PlayResult.SUCCESS) {
+								displayResult(play_res);
+							}
+						} catch (StatusRuntimeException e) {
+							System.out.println("Caught exception with description: " +
+									e.getStatus().getDescription()); // The same exception description provided in the server side
+						}
+					} while (play_res != PlayResult.SUCCESS);
 
-				debug("Call checkWinner");
-				winner = stub.checkWinner(CheckWinnerRequest.getDefaultInstance()).getResult();
+					// TODO call check winner and set the winning player.
+					CheckWinnerRequest request = CheckWinnerRequest.newBuilder().build();
+					CheckWinnerResponse response = stub.checkWinner(request);
+					winner = response.getResult();
+					/* Select next player. */
+					player = (player + 1) % 2;
+					debug("player " + player);
 
-				/* Select next player. */
-				player = (player + 1) % 2;
-				debug("player " + player);
+				} while (winner == -1);
 
-			} while (winner == -1);
-
+			} else {
+				//waitForWinner mode
+				System.out.println("Waiting for winner...");
+				WaitForWinnerResponse response = stub.waitForWinner(WaitForWinnerRequest.getDefaultInstance()); //blocking call
+				winner = response.getResult();
+			}
 			/* Game is over so display the final board. */
 			debug("Call currentBoard");
 			System.out.println(stub.currentBoard(CurrentBoardRequest.getDefaultInstance()).getBoard());
