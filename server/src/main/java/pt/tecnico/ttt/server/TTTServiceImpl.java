@@ -63,4 +63,16 @@ public class TTTServiceImpl extends TTTGrpc.TTTImplBase {
 		// Notify the client that the operation has been completed.
 		responseObserver.onCompleted();
 	}
+
+	@Override
+	public void resetBoard(ResetBoardRequest request, StreamObserver<ResetBoardResponse> responseObserver){
+		// Call the resetBoard method from the game
+		ttt.resetBoard();
+		// Create the response
+		ResetBoardResponse response = ResetBoardResponse.getDefaultInstance();
+		// Send the response
+		responseObserver.onNext(response);
+		// Notify the client that the operation has been completed.
+		responseObserver.onCompleted();
+	}
 }

@@ -59,6 +59,12 @@ message WaitForWinnerResponse {
 	int32 result = 1;
 }
 
+message ResetBoardRequest {
+};
+
+message ResetBoardResponse {
+};
+
 // service
 
 service TTT {
@@ -66,4 +72,5 @@ service TTT {
 	rpc Play(PlayRequest) returns (PlayResponse);
 	rpc CheckWinner(CheckWinnerRequest) returns (CheckWinnerResponse);
 	rpc waitForWinner(WaitForWinnerRequest) returns (WaitForWinnerResponse);
+	rpc ResetBoard(ResetBoardRequest) returns (ResetBoardResponse);
 }

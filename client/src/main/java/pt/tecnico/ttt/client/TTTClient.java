@@ -96,9 +96,11 @@ public class TTTClient {
 						go = scanner.nextInt();
 						debug("go = " + go);
 
+						play_res = PlayResult.UNKNOWN;
 						if (go == 0) {
-							play_res = PlayResult.UNKNOWN;
-							continue;
+							// Refresh the board
+							stub.resetBoard(ResetBoardRequest.getDefaultInstance());
+							continue;		
 						}
 
 						/* Get row index of board. */
